@@ -106,11 +106,11 @@ public class SortView extends javax.swing.JFrame {
         buttonGroup1.add(rbtnCrescente);
         rbtnCrescente.setSelected(true);
         rbtnCrescente.setText("Crescente");
-        rbtnCrescente.setActionCommand("asc");
+        rbtnCrescente.setActionCommand("ASC");
 
         buttonGroup1.add(rbtnDecrescente);
         rbtnDecrescente.setText("Decrescente");
-        rbtnDecrescente.setActionCommand("desc");
+        rbtnDecrescente.setActionCommand("DESC");
 
         btnOrdenar.setText("Ordenar");
 

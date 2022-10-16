@@ -4,7 +4,7 @@
  */
 package com.system.components;
 
-import com.system.helpers.sorting.SortStrategy;
+import com.system.business.sorting.SortStrategy;
 
 /**
  *

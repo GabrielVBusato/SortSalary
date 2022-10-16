@@ -185,7 +185,7 @@
         </Property>
         <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="Crescente"/>
-        <Property name="actionCommand" type="java.lang.String" value="asc"/>
+        <Property name="actionCommand" type="java.lang.String" value="ASC"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JRadioButton" name="rbtnDecrescente">
@@ -194,7 +194,7 @@
           <ComponentRef name="buttonGroup1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Decrescente"/>
-        <Property name="actionCommand" type="java.lang.String" value="desc"/>
+        <Property name="actionCommand" type="java.lang.String" value="DESC"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="btnOrdenar">

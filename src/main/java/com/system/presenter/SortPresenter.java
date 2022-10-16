@@ -4,21 +4,26 @@
  */
 package com.system.presenter;
 
+import com.opencsv.exceptions.CsvException;
 import com.system.components.ComboStrategyItem;
-import com.system.helpers.fileParser.FileStrategy;
-import com.system.helpers.fileParser.estrategies.CSVParser;
-import com.system.helpers.ordering.OrderList;
-import com.system.helpers.sorting.SortHelper;
-import com.system.helpers.sorting.estrategies.SelectionSort;
+import com.system.business.file.FileReaderStrategy;
+import com.system.business.file.estrategies.CSVParser;
+import com.system.business.sorting.SortOrder;
+import com.system.business.sorting.SortStrategy;
+import com.system.business.sorting.estrategies.BubbleSort;
+import com.system.business.sorting.estrategies.SelectionSort;
+import com.system.exceptions.EmptyListException;
+import com.system.services.FileService;
+import com.system.services.SortService;
 import com.system.view.SortView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
-import com.system.helpers.sorting.SortStrategy;
-import com.system.helpers.sorting.estrategies.BubbleSort;
-import java.util.ArrayList;
-import javax.swing.ListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -27,13 +32,20 @@ import javax.swing.ListModel;
 public class SortPresenter {
 
     private final SortView view;
-    private static FileStrategy fileStrategy;
-    private static SortStrategy sortStrategy;
+    private final FileService fileService;
+    private final SortService sortService;
+    private List<String> salarys;
 
-    public SortPresenter() {
+    private FileReaderStrategy fileStrategy;
+    private SortStrategy sortStrategy;
+
+    public SortPresenter(FileService fileService, SortService sortService) {
         view = new SortView();
-        setFileStrategy(new CSVParser("src/main/java/com/system/CSVDocuments/salarios.csv"));
-        setSortStrategy(new SelectionSort());
+        this.fileService = fileService;
+        this.sortService = sortService;
+
+        this.fileStrategy = new CSVParser("src/main/resources/csv/salarios.csv");
+        this.sortStrategy = new SelectionSort();
         initComponents();
     }
 
@@ -44,35 +56,45 @@ public class SortPresenter {
         view.getBtnCarregarArquivo().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                List<String[]> salarys = fileStrategy.parseFileToApplicationData();
-                DefaultListModel salaryListModel = new DefaultListModel();
-                for (String[] salary : salarys) {
-                    salaryListModel.addElement(salary[0]);
+                try {
+                    salarys = fileService.read(fileStrategy);
+
+                    DefaultListModel salaryListModel = new DefaultListModel();
+
+                    for (String salary : salarys) {
+                        salaryListModel.addElement(salary);
+                    }
+
+                    view.getLstSemOrdem().setModel(salaryListModel);
+                } catch (IOException | CsvException ex) {
+                    JOptionPane.showMessageDialog(null, "Falha ao carregar arquivo");
                 }
-                view.getLstSemOrdem().setModel(salaryListModel);
             }
         });
 
         view.getBtnOrdenar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                String order = view.getButtonGroup1().getSelection().getActionCommand();
-                ListModel<String> salaryListModel = view.getLstSemOrdem().getModel();
-                List<Float> salaryList = new ArrayList<>();
-                for (int i = 0; i < salaryListModel.getSize(); i++) {
-                    String salaryValue = salaryListModel.getElementAt(i);
-                    salaryList.add(Float.valueOf(salaryValue));
+                try {
+                    SortOrder sortOrder = SortOrder.valueOf(view.getButtonGroup1().getSelection().getActionCommand());
+
+                    DefaultListModel orderedSalaryListModel = new DefaultListModel();
+
+                    long startTime = System.currentTimeMillis();
+                    sortService.applySortAlgorithm(sortStrategy, salarys, sortOrder);
+
+                    for (String salary : salarys) {
+                        orderedSalaryListModel.addElement(salary);
+                    }
+
+                    view.getLstOrdenados().setModel(orderedSalaryListModel);
+
+                    long estimatedTime = System.currentTimeMillis() - startTime;
+
+                    view.getLblTempo().setText(Long.toString(estimatedTime));
+                } catch (EmptyListException ex) {
+                    JOptionPane.showMessageDialog(null, "Lista vazia!");
                 }
-                DefaultListModel ordenedSalaryListModel = new DefaultListModel();
-                long startTime = System.currentTimeMillis();
-                SortHelper.applySortAlgorithm(sortStrategy, salaryList);
-                OrderList.setOrder(order, salaryList);
-                for (Float salary : salaryList) {
-                    ordenedSalaryListModel.addElement(salary);
-                }
-                view.getLstOrdenados().setModel(ordenedSalaryListModel);
-                long estimatedTime = System.currentTimeMillis() - startTime;
-                view.getLblTempo().setText(Long.toString(estimatedTime));
             }
         });
 
@@ -85,11 +107,11 @@ public class SortPresenter {
         });
     }
 
-    public static void setFileStrategy(FileStrategy strategy) {
+    public void setFileStrategy(FileReaderStrategy strategy) {
         fileStrategy = strategy;
     }
 
-    public static void setSortStrategy(SortStrategy strategy) {
+    public void setSortStrategy(SortStrategy strategy) {
         sortStrategy = strategy;
     }
 
