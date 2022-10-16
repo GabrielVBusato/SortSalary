@@ -14,7 +14,7 @@ import java.util.List;
  * @author busat
  */
 public class FileService {
-    public List read(FileReaderStrategy strategy) throws IOException, CsvException {
+    public List<String> read(FileReaderStrategy strategy) throws IOException, CsvException {
         return strategy.parse();
     }
 }

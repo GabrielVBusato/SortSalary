@@ -7,7 +7,7 @@ package com.system.services;
 import com.system.business.sorting.SortOrder;
 import com.system.business.sorting.SortStrategy;
 import com.system.exceptions.EmptyListException;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  *
@@ -15,11 +15,11 @@ import java.util.List;
  */
 public class SortService {
 
-    public void applySortAlgorithm(SortStrategy strategy, List<String> list, SortOrder order) throws EmptyListException {
-        if (list.isEmpty()) {
+    public void applySortAlgorithm(SortStrategy strategy, String[] list, SortOrder order) throws EmptyListException {
+
+        if (Arrays.asList(list).isEmpty()) {
             throw new EmptyListException();
         }
-
         strategy.sort(list, order);
     }
 }

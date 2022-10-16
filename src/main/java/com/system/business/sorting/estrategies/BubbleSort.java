@@ -2,8 +2,8 @@ package com.system.business.sorting.estrategies;
 
 import com.system.business.sorting.SortOrder;
 import com.system.business.sorting.SortStrategy;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 /**
  *
@@ -12,19 +12,21 @@ import java.util.List;
 public class BubbleSort implements SortStrategy {
 
     @Override
-    public void sort(List<String> list, SortOrder order) {
-        for (int i = 0; i < list.size() - 1; i++) {
-            for (int j = 0; j < list.size() - 1 - i; j++) {
-                if (Float.valueOf(list.get(j)) > Float.valueOf(list.get(j + 1))) {
-                    String aux = list.get(j);
-                    list.set(j, list.get(j + 1));
-                    list.set(j + 1, aux);
+    public void sort(String[] list, SortOrder order) {
+        int n = list.length;
+        for (int i = 0; i < n - 1; i++) {
+            System.out.println(i);
+            for (int j = 0; j < n - i - 1; j++) {
+                if (Float.valueOf(list[j]) > Float.valueOf(list[j + 1])) {
+                    String temp = list[j];
+                    list[j] = list[j + 1];
+                    list[j + 1] = temp;
                 }
             }
         }
         
         if (order.equals(SortOrder.DESC)) {
-            Collections.reverse(list);
+            Collections.reverse(Arrays.asList(list));
         }
     }
 }

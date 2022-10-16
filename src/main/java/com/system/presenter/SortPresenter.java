@@ -19,6 +19,8 @@ import com.system.view.SortView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +36,7 @@ public class SortPresenter {
     private final SortView view;
     private final FileService fileService;
     private final SortService sortService;
-    private List<String> salarys;
+    private String[] salarys;
 
     private FileReaderStrategy fileStrategy;
     private SortStrategy sortStrategy;
@@ -43,6 +45,7 @@ public class SortPresenter {
         view = new SortView();
         this.fileService = fileService;
         this.sortService = sortService;
+        salarys = new String[0];
 
         this.fileStrategy = new CSVParser("src/main/resources/csv/salarios.csv");
         this.sortStrategy = new SelectionSort();
@@ -57,8 +60,7 @@ public class SortPresenter {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    salarys = fileService.read(fileStrategy);
-
+                    salarys = fileService.read(fileStrategy).stream().toArray(String[]::new);
                     DefaultListModel salaryListModel = new DefaultListModel();
 
                     for (String salary : salarys) {
@@ -81,9 +83,11 @@ public class SortPresenter {
                     DefaultListModel orderedSalaryListModel = new DefaultListModel();
 
                     long startTime = System.currentTimeMillis();
-                    sortService.applySortAlgorithm(sortStrategy, salarys, sortOrder);
-
-                    for (String salary : salarys) {
+                    String[] salaryList = Arrays.copyOf(salarys, salarys.length);
+                    
+                    sortService.applySortAlgorithm(sortStrategy, salaryList, sortOrder);
+                    
+                    for (String salary : salaryList) {
                         orderedSalaryListModel.addElement(salary);
                     }
 

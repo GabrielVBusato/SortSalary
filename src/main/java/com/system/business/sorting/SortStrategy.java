@@ -4,12 +4,11 @@
  */
 package com.system.business.sorting;
 
-import java.util.List;
 
 /**
  *
  * @author busat
  */
 public interface SortStrategy {
-    void sort(List<String> list, SortOrder order);
+    void sort(String[] list, SortOrder order);
 }
